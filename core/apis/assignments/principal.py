@@ -39,13 +39,18 @@ def grade_assignment(p, incoming_payload):
 
      # Fetch the assignment by ID
     assignment = Assignment.get_by_id(grade_assignment_payload.id)
-    
+
     # Check if the assignment is in draft state
+    # set_assignment_to_draft(5)
     if assignment.state == 'DRAFT':
         return APIResponse.respond(
-            data={'error': 'Cannot grade a draft assignment.'}, 
-            status=400
+            data={
+                'error': 'FyleError',
+                'message': 'Cannot grade a draft assignment.'  # Provide a meaningful error message
+            },
+            status=400  # Return a 400 status code for bad request
         )
+    
     
     # Call the mark_grade method from the Assignment model
     graded_assignment = Assignment.mark_grade(
@@ -58,4 +63,9 @@ def grade_assignment(p, incoming_payload):
     # Serialize the graded assignment data to return in the response
     graded_assignment_dump = AssignmentSchema().dump(graded_assignment)
 
-    return APIResponse.respond(data=graded_assignment_dump)
+    return APIResponse.respond(data={
+        'id': graded_assignment_dump['id'],
+        'state': graded_assignment_dump['state'],  # This should be 'GRADED'
+        'grade': graded_assignment_dump['grade']  # This should match GradeEnum.C or other grades
+    },
+    status=200)

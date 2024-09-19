@@ -67,6 +67,10 @@ class Assignment(db.Model):
         assertions.assert_valid(assignment.student_id == auth_principal.student_id, 'This assignment belongs to some other student')
         assertions.assert_valid(assignment.content is not None, 'assignment with empty content cannot be submitted')
 
+         # Update the assignment's state and teacher_id
+        assignment.teacher_id = teacher_id
+        assignment.state = 'SUBMITTED'  # Update the state to SUBMITTED
+        
         assignment.teacher_id = teacher_id
         db.session.flush()
 
@@ -105,3 +109,13 @@ class Assignment(db.Model):
     def get_all_submitted_and_graded(cls):
         # Query to fetch all submitted and graded assignments
         return cls.query.filter(cls.state.in_(["SUBMITTED", "GRADED"])).all()
+
+    # @classmethod
+    # def set_assignment_to_draft(assignment_id):
+    
+    #     assignment = Assignment.get_by_id(assignment_id)
+    #     if assignment:
+    #         assignment.state = 'DRAFT'  # Set the state to DRAFT
+    #         db.session.commit()  # Commit the changes to the database
+    #         return True  # Indicate success
+    #     return False  # Indicate failure (assignment not found)

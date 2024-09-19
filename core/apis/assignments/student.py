@@ -49,17 +49,24 @@ def submit_assignment(p, incoming_payload):
     # Fetch the assignment by ID
     assignment = Assignment.get_by_id(submit_assignment_payload.id)
 
-    # Check if the assignment is already graded
-    if assignment.state == 'GRADED':
+    # Check if the assignment exists
+    if assignment is None:
         return APIResponse.respond(
-            data={
-                'error': 'Cannot submit an already graded assignment.',
-                'teacher_id': assignment.teacher_id ,
-                'student_id': assignment.student_id ,
-                'state': 'SUBMITTED'
-            },
-            status=200
+            data={'error': 'Assignment not found.'},
+            status=404  # Not found status
         )
+    
+    # # Check if the assignment is already graded
+    # if assignment.state == 'GRADED':
+    #     return APIResponse.respond(
+    #         data={
+    #             'error': 'Cannot submit an already graded assignment.',
+    #             'teacher_id': assignment.teacher_id ,
+    #             'student_id': assignment.student_id ,
+    #             'state': 'SUBMITTED'
+    #         },
+    #         status=200
+    #     )
     
     # Check if the assignment is in DRAFT state before submitting
     if assignment.state != 'DRAFT':
@@ -77,5 +84,9 @@ def submit_assignment(p, incoming_payload):
         auth_principal=p
     )
     db.session.commit()
+    
     submitted_assignment_dump = AssignmentSchema().dump(submitted_assignment)
-    return APIResponse.respond(data=submitted_assignment_dump)
+    return APIResponse.respond(
+        data=submitted_assignment_dump,
+        status=200
+    )
