@@ -22,6 +22,13 @@ def list_assignments(p):
 @decorators.authenticate_principal
 def upsert_assignment(p, incoming_payload):
     """Create or Edit an assignment"""
+     # Check if content is None
+    if incoming_payload.get('content') is None:
+        return APIResponse.respond(
+            data={'error': 'Content cannot be null.'},
+            status=400
+        )
+    
     assignment = AssignmentSchema().load(incoming_payload)
     assignment.student_id = p.student_id
 
@@ -38,6 +45,32 @@ def submit_assignment(p, incoming_payload):
     """Submit an assignment"""
     submit_assignment_payload = AssignmentSubmitSchema().load(incoming_payload)
 
+
+    # Fetch the assignment by ID
+    assignment = Assignment.get_by_id(submit_assignment_payload.id)
+
+    # Check if the assignment is already graded
+    if assignment.state == 'GRADED':
+        return APIResponse.respond(
+            data={
+                'error': 'Cannot submit an already graded assignment.',
+                'teacher_id': assignment.teacher_id ,
+                'student_id': assignment.student_id ,
+                'state': 'SUBMITTED'
+            },
+            status=200
+        )
+    
+    # Check if the assignment is in DRAFT state before submitting
+    if assignment.state != 'DRAFT':
+        return APIResponse.respond(
+            data={
+                'error': 'FyleError',
+                'message': 'only a draft assignment can be submitted'
+            },
+            status=400  
+        )
+    
     submitted_assignment = Assignment.submit(
         _id=submit_assignment_payload.id,
         teacher_id=submit_assignment_payload.teacher_id,

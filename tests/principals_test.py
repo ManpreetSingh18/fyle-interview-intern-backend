@@ -18,10 +18,11 @@ def test_grade_assignment_draft_assignment(client, h_principal):
     """
     failure case: If an assignment is in Draft state, it cannot be graded by principal
     """
+    draft_assignment_id = 5  # Replace with an actual draft assignment ID
     response = client.post(
         '/principal/assignments/grade',
         json={
-            'id': 5,
+            'id': draft_assignment_id, 
             'grade': GradeEnum.A.value
         },
         headers=h_principal
