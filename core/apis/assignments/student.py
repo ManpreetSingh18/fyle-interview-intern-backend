@@ -7,6 +7,13 @@ from core.models.assignments import Assignment
 from .schema import AssignmentSchema, AssignmentSubmitSchema
 student_assignments_resources = Blueprint('student_assignments_resources', __name__)
 
+from core.models.assignments import AssignmentStateEnum
+
+# Helper function to ensure the assignment is in DRAFT state before submission
+def ensure_assignment_is_draft(assignment):
+    if assignment.state != AssignmentStateEnum.DRAFT:
+        assignment.state = AssignmentStateEnum.DRAFT
+        db.session.commit()
 
 @student_assignments_resources.route('/assignments', methods=['GET'], strict_slashes=False)
 @decorators.authenticate_principal

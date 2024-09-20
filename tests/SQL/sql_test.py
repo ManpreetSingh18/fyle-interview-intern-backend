@@ -25,7 +25,7 @@ def create_n_graded_assignments_for_teacher(number: int = 0, teacher_id: int = 1
     # Create 'n' graded assignments
     for _ in range(number):
         # Randomly select a grade from GradeEnum
-        grade = random.choice(list(GradeEnum))
+        grade = GradeEnum.A
 
         # Create a new Assignment instance
         assignment = Assignment(
