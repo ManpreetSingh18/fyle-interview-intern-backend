@@ -13,6 +13,9 @@ class GradeEnum(str, enum.Enum):
     C = 'C'
     D = 'D'
 
+    @classmethod
+    def valid_grades(cls):
+        return {cls.A, cls.B, cls.C, cls.D, cls.F}
 
 class AssignmentStateEnum(str, enum.Enum):
     DRAFT = 'DRAFT'

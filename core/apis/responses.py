@@ -8,4 +8,11 @@ class APIResponse(Response):
             "data": data,
             
         }
-        return make_response(jsonify(response_data), status,message)  # Include status in the response
+        # If the data is an error, include it accordingly
+         # If the data is an error, include it accordingly
+        if isinstance(data, dict) and 'error' in data:
+            response_data['error'] = data['error']
+            # Include message if provided
+            if message:
+                response_data['message'] = message
+        return make_response(jsonify(response_data), status)

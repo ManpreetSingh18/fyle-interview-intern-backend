@@ -24,6 +24,31 @@ def grade_assignment(p, incoming_payload):
     """Grade an assignment"""
     grade_assignment_payload = AssignmentGradeSchema().load(incoming_payload)
 
+    # Fetch the assignment by ID to check if it exists
+    assignment = Assignment.get_by_id(grade_assignment_payload.id)
+    if assignment is None:
+        return APIResponse.respond(
+            data={'error': 'FyleError', 'message': 'Assignment not found.'},
+            status=404
+        )
+    
+    # Check if the teacher is the correct one for grading the assignment
+    if assignment.teacher_id != p.teacher_id:
+        return APIResponse.respond(
+            data={
+                'error': 'FyleError',
+                'message': 'Assignment not submitted to this teacher.'
+            },
+            status=400  # Bad request status
+        )
+    
+    # Validate the grade
+    if grade_assignment_payload.grade not in GradeEnum.valid_grades():
+        return APIResponse.respond(
+            data={'error': 'ValidationError', 'message': 'Invalid grade provided.'},
+            status=400
+        )
+    
     graded_assignment = Assignment.mark_grade(
         _id=grade_assignment_payload.id,
         grade=grade_assignment_payload.grade,

@@ -37,10 +37,10 @@ def test_grade_assignment_cross(client, h_teacher_2):
             "grade": "A"
         }
     )
-
+    
     assert response.status_code == 400
     data = response.json
-
+    
     assert data['error'] == 'FyleError'
 
 

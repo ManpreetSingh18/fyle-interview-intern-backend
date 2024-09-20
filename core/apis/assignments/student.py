@@ -52,29 +52,20 @@ def submit_assignment(p, incoming_payload):
     # Check if the assignment exists
     if assignment is None:
         return APIResponse.respond(
-            data={'error': 'Assignment not found.'},
+            data={'error': 'FyleError', 'message': 'Assignment not found.'},  # Include 'message'
             status=404  # Not found status
         )
     
-    # # Check if the assignment is already graded
-    # if assignment.state == 'GRADED':
-    #     return APIResponse.respond(
-    #         data={
-    #             'error': 'Cannot submit an already graded assignment.',
-    #             'teacher_id': assignment.teacher_id ,
-    #             'student_id': assignment.student_id ,
-    #             'state': 'SUBMITTED'
-    #         },
-    #         status=200
-    #     )
+   
     
     # Check if the assignment is in DRAFT state before submitting
     if assignment.state != 'DRAFT':
         return APIResponse.respond(
             data={
-                'error': 'FyleError',
-                'message': 'only a draft assignment can be submitted'
+                'message': 'only a draft assignment can be submitted',
+                'error': 'FyleError'
             },
+            
             status=400  
         )
     
