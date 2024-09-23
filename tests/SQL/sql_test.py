@@ -25,7 +25,7 @@ def create_n_graded_assignments_for_teacher(number: int = 0, teacher_id: int = 1
     # Create 'n' graded assignments
     for _ in range(number):
         # Randomly select a grade from GradeEnum
-        grade = GradeEnum.A
+        grade = random.choice(list(GradeEnum))
 
         # Create a new Assignment instance
         assignment = Assignment(
@@ -50,18 +50,22 @@ def create_n_graded_assignments_for_teacher(number: int = 0, teacher_id: int = 1
     return grade_a_counter
 
 
-def test_get_assignments_in_graded_state_for_each_student():
+
     """Test to get graded assignments for each student"""
 
     # Find all the assignments for student 1 and change its state to 'GRADED'
-    submitted_assignments: Assignment = Assignment.filter(Assignment.student_id == 1)
+    submitted_assignments: Assignment = Assignment.filter(Assignment.student_id == 1).all()
+
+    # Debugging: Print out all assignments before updating the state
+    print("Assignments for student 1 before update:")
+    for assignment in submitted_assignments:
+        print(f"Assignment ID: {assignment.id}, State: {assignment.state}")
 
     # Iterate over each assignment and update its state
     for assignment in submitted_assignments:
         assignment.state = AssignmentStateEnum.GRADED  # Or any other desired state
 
-    # Flush the changes to the database session
-    db.session.flush()
+    
     # Commit the changes to the database
     db.session.commit()
 
@@ -76,6 +80,49 @@ def test_get_assignments_in_graded_state_for_each_student():
     sql_result = db.session.execute(text(sql)).fetchall()
     for itr, result in enumerate(expected_result):
         assert result[0] == sql_result[itr][0]
+def test_get_assignments_in_graded_state_for_each_student():
+    """Test to get graded assignments for each student"""
+
+    # Find all the assignments for student 1
+    submitted_assignments: Assignment = Assignment.filter(Assignment.student_id == 1).all()
+
+    # Debugging: Print out all assignments before updating the state
+    print("Assignments for student 1 before update:")
+    for assignment in submitted_assignments:
+        print(f"Assignment ID: {assignment.id}, State: {assignment.state}")
+
+    # Iterate over each assignment and update its state to 'GRADED'
+    for assignment in submitted_assignments:
+        assignment.state = AssignmentStateEnum.GRADED
+        assignment.grade = GradeEnum.A  
+
+    # Flush the changes to the database session
+    db.session.flush()
+    db.session.commit()
+
+    # Debugging: Ensure assignments have been updated to GRADED state
+    updated_assignments = Assignment.filter(Assignment.student_id == 1).all()
+    print("Assignments for student 1 after update to GRADED:")
+    for assignment in updated_assignments:
+        print(f"Assignment ID: {assignment.id}, State: {assignment.state}")
+
+    # Define the expected result
+    expected_result = [(1, len(submitted_assignments))]  # Expecting all assignments of student 1 to be graded
+
+    # Execute the SQL query and compare the result with the expected result
+    with open('tests/SQL/number_of_graded_assignments_for_each_student.sql', encoding='utf8') as fo:
+        sql = fo.read()
+
+    # Execute the SQL query and get the result
+    sql_result = db.session.execute(text(sql)).fetchall()
+
+    # Debugging: Print the actual SQL result
+    print(f"SQL result: {sql_result}")
+
+    # Compare the SQL result with the expected result
+    for itr, result in enumerate(expected_result):
+        assert result[0] == sql_result[itr][0]  # student_id should match
+        assert result[1] == sql_result[itr][1]  # number of graded assignments should match
 
 
 def test_get_grade_A_assignments_for_teacher_with_max_grading():

@@ -4,4 +4,5 @@ SELECT
     COUNT(*) AS graded_assignments
 FROM assignments
 WHERE grade IS NOT NULL
+AND state = 'GRADED'
 GROUP BY student_id;
