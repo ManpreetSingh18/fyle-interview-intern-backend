@@ -14,6 +14,7 @@ def ensure_assignment_is_draft(assignment):
     if assignment.state != AssignmentStateEnum.DRAFT:
         assignment.state = AssignmentStateEnum.DRAFT
         db.session.commit()
+        
 
 @student_assignments_resources.route('/assignments', methods=['GET'], strict_slashes=False)
 @decorators.authenticate_principal

@@ -87,9 +87,9 @@ def test_get_assignments_in_graded_state_for_each_student():
     submitted_assignments: Assignment = Assignment.filter(Assignment.student_id == 1).all()
 
     # Debugging: Print out all assignments before updating the state
-    print("Assignments for student 1 before update:")
-    for assignment in submitted_assignments:
-        print(f"Assignment ID: {assignment.id}, State: {assignment.state}")
+    # print("Assignments for student 1 before update:")
+    # for assignment in submitted_assignments:
+    #     print(f"Assignment ID: {assignment.id}, State: {assignment.state}")
 
     # Iterate over each assignment and update its state to 'GRADED'
     for assignment in submitted_assignments:
@@ -102,9 +102,9 @@ def test_get_assignments_in_graded_state_for_each_student():
 
     # Debugging: Ensure assignments have been updated to GRADED state
     updated_assignments = Assignment.filter(Assignment.student_id == 1).all()
-    print("Assignments for student 1 after update to GRADED:")
-    for assignment in updated_assignments:
-        print(f"Assignment ID: {assignment.id}, State: {assignment.state}")
+    # print("Assignments for student 1 after update to GRADED:")
+    # for assignment in updated_assignments:
+    #     print(f"Assignment ID: {assignment.id}, State: {assignment.state}")
 
     # Define the expected result
     expected_result = [(1, len(submitted_assignments))]  # Expecting all assignments of student 1 to be graded
@@ -117,7 +117,7 @@ def test_get_assignments_in_graded_state_for_each_student():
     sql_result = db.session.execute(text(sql)).fetchall()
 
     # Debugging: Print the actual SQL result
-    print(f"SQL result: {sql_result}")
+    # print(f"SQL result: {sql_result}")
 
     # Compare the SQL result with the expected result
     for itr, result in enumerate(expected_result):

@@ -22,6 +22,9 @@ def ready():
 
     return response
 
+@app.route('/hello')
+def hello_world():
+    return 'Hello, World!'
 
 @app.errorhandler(Exception)
 def handle_error(err):
